@@ -1,0 +1,47 @@
+{{template "base.gotmpl"}}
+
+{{define "title"}}{{.Title}}{{end}}
+
+{{define "head"}}
+    <meta property="og:title" content="{{.Title}}">
+    <meta property="og:description" content="{{.Excerpt}}">
+    <meta property="og:url" content="https://mecha.dev/blog/{{.Slug}}">
+    <meta property="og:image" content="https://mecha.dev/assets/post-thumb.jpg">
+    <meta property="og:type" content="article">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{.Title}}">
+    <meta name="twitter:description" content="{{.Excerpt}}">
+    <meta name="twitter:image" content="https://mecha.dev/assets/post-thumb.jpg">
+    <meta name="twitter:site" content="@mechadev">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "{{.Title}}",
+      "author": { "@type": "Person", "name": "Miguel Muscat" },
+      "datePublished": "{{.Date.Format "2006-02-01"}}",
+      "dateModified": "{{.Date.Format "2006-02-01"}}",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://mecha.dev/blog/{{.Slug}}" }
+    }
+    </script>
+{{end}}
+
+{{define "content"}}
+    <article class="post">
+        <header class="post-head">
+            <h1>{{.Title}}</h1>
+            <time>{{.Date.Format "January 2, 2006 - 03:04 PM"}}</time>
+        </header>
+
+        <div class="post-body">
+            {{.Body}}
+        </div>
+
+        <footer class="post-footer">
+            <a href="/blog">&lt; back to blog</a>
+            <a href="#top">^ back to top</a>
+        </footer>
+    </article>
+{{end}}

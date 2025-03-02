@@ -1,0 +1,25 @@
+{{template "base.gotmpl" .}}
+
+{{define "title"}}404 Not found{{end}}
+
+{{define "content"}}
+    <h1>Page not found</h1>
+    <br>
+    <p>
+        How did you get here? Why did you come here? When did you come here? Have you been here before? Will you come here again?
+    </p>
+    <br>
+    <p>
+        <a href="https://theuselessweb.com/" rel="nofollow noreferrer" target="_blank">go somewhere else</a>
+    </p>
+    <marquee direction="left" scrollamount="12" class="ascii-art" role="img" aria-label="ASCII art of an airplane with a tail banner that reads: 404">
+             ____           ___                                _______________________
+  |         | ___\         /   |                             /|                      /
+ _:________/'(..)`\_______/  | |                            / |   █  █ ████ █  █    /
+<_|``````  \__~~__/       ___|_| ~-~-~-~-~-~-~-~-~-~-~-~-~-:  |   ████ █  █ ████   -
+  :\_____(=========,   ,--\__|_/                            \ |      █ ████    █    \
+  |       \       /---'                                      \|______________________\
+           |     /
+           |____/
+    </marquee>
+{{end}}

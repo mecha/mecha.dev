@@ -1,0 +1,31 @@
+{{template "base.gotmpl" .}}
+
+{{define "title"}}About me{{end}}
+
+{{define "content"}}
+    <section id="about">
+        <h1>About me</h1>
+        <p>Hello! I'm Miguel, but I go by <code>mecha</code> on the interwebz.</p>
+        <p>
+            I consider myself a programmer first and foremost. I've been writing
+            code professionally for around {{.ProYears}} years, and as a hobby
+            for around {{.HobbyYearsMore}} more.
+        </p>
+        <p>
+            Some of my other hobbies include reading (mostly fantasy and Sci-fi),
+            writing (of the same genres), playing video games (guess the genres),
+            and amateur astronomy. Does gym count as a hobby? I do that too.
+        </p>
+        <div class="card">
+            <img src="/assets/avatar.jpg" alt="A photo of me" />
+            <div>
+                <p>Where you can find me:</p>
+                <ul>
+                    <li><a href="https://github.com/mecha" target="_blank">github</a></li>
+                    <li><a href="https://x.com/mechadev" target="_blank">x/twitter</a></li>
+                    <li><a href="mailto:mail@miguelmuscat.me" target="_blank">mail@miguelmuscat.me</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+{{end}}

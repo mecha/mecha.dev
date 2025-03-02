@@ -1,0 +1,18 @@
+{{template "base.gotmpl" .}}
+
+{{define "title"}}Home{{end}}
+
+{{define "body"}}
+    <div class="homepage">
+        <section>
+            <header>{{template "logo"}}</header>
+            <p>(under construction)</p>
+            <nav>
+                {{template "nav-links"}}
+            </nav>
+            <footer>
+                {{template "theme-selector"}}
+            </footer>
+        </section>
+    </div>
+{{end}}
