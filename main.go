@@ -64,7 +64,7 @@ func parseFlags() {
 		fmt.Println("FLAGS:")
 		fmt.Println("  -h, --help\tShow this help message")
 		flag.VisitAll(func(f *flag.Flag) {
-			fmt.Printf("  -%s\t\t%s\n", f.Name, f.Usage)
+			fmt.Printf("  -%s\t\t%s Default: %s\n", f.Name, f.Usage, f.DefValue)
 		})
 	}
 	Flags = FlagsObj{}
