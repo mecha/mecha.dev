@@ -9,4 +9,4 @@ COPY . .
 RUN go build -tags sqlite_fts5 -v -o /usr/local/bin/main .
 
 EXPOSE 8080
-CMD ["main", "-v", "-p", "8080"]
+CMD ["main", "-v"]
