@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caddyserver/certmagic"
 	"github.com/mecha/mecha.dev/blog"
 	"github.com/mecha/mecha.dev/projects"
 	"github.com/mecha/mecha.dev/views"
@@ -20,23 +19,11 @@ import (
 const NumPostsPerPage = 20
 
 func runHttpServer() {
-	handler := createHttpHandler()
+	addr := ":" + strconv.Itoa(Flags.PortNum)
+	slog.Info("Listening and serving HTTP", "addr", addr)
 
-	var err error
-	if Flags.TLSEnabled {
-		certmagic.DefaultACME.Agreed = true
-		certmagic.DefaultACME.Email = "mail@miguelmuscat.me"
-		if Flags.UseStagingCA {
-			slog.Info("Using staging CA")
-			certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
-		}
-		slog.Info("Serving HTTPS")
-		err = certmagic.HTTPS([]string{"mecha.dev"}, handler)
-	} else {
-		addr := ":" + strconv.Itoa(Flags.PortNum)
-		slog.Info("Serving HTTP")
-		err = http.ListenAndServe(addr, handler)
-	}
+	handler := createHttpHandler()
+	err := http.ListenAndServe(addr, handler)
 
 	if !errors.Is(err, http.ErrServerClosed) {
 		slog.Error(err.Error())

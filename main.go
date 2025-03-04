@@ -30,8 +30,6 @@ type FlagsObj struct {
 	Quiet        bool
 	Watch        bool
 	PortNum      int
-	TLSEnabled   bool
-	UseStagingCA bool
 }
 
 func main() {
@@ -73,9 +71,7 @@ func parseFlags() {
 	flag.BoolVar(&Flags.Verbose, "v", false, "Enables debug logging.")
 	flag.BoolVar(&Flags.Quiet, "q", false, "Disables all non-error logging.")
 	flag.BoolVar(&Flags.Watch, "w", false, "Watch blog post and view template files for changes.")
-	flag.IntVar(&Flags.PortNum, "p", 8080, "The HTTP port to serve through. Not used if TLS is enabled.")
-	flag.BoolVar(&Flags.TLSEnabled, "t", false, "Enable TLS for HTTPS.")
-	flag.BoolVar(&Flags.UseStagingCA, "s", false, "Use LetsEncrypt's staging CA. Only used if TLS is enabled.")
+	flag.IntVar(&Flags.PortNum, "p", 8080, "The HTTP port to serve through.")
 	flag.Parse()
 }
 
