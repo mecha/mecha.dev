@@ -149,7 +149,9 @@ func createHttpHandler() http.Handler {
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			views.Write("templates/home.gotmpl", w, nil)
+			views.Write("templates/home.gotmpl", w, map[string]any{
+				"Version": Version,
+			})
 		} else {
 			w.WriteHeader(404)
 			views.Write("templates/404.gotmpl", w, nil)

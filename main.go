@@ -20,7 +20,10 @@ const (
 	ProjectsDir = "content/projects"
 )
 
-var Flags FlagsObj
+var (
+	Flags   = FlagsObj{}
+	Version = "<unknown>"
+)
 
 type FlagsObj struct {
 	Verbose      bool
@@ -37,6 +40,7 @@ func main() {
 	initLogger()
 	initBlog()
 	initProjects()
+	initVersion()
 
 	if Flags.Watch {
 		startPostFileWatcher()
@@ -104,6 +108,15 @@ func initProjects() {
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
+	}
+}
+
+func initVersion() {
+	raw, err := os.ReadFile(".git/refs/heads/main")
+	if err == nil {
+		Version = string(raw[:8])
+	} else {
+		slog.Warn(err.Error())
 	}
 }
 
