@@ -1,9 +1,20 @@
-name: Deploy
-on: workflow_dispatch
+name: Deployment
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    branches: [main]
+    types:
+      - completed
+  workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: mecha.dev
+      url: https://mecha.dev
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
@@ -16,7 +27,20 @@ jobs:
         run: go mod download
       - name: build
         run: make build
-      - uses: actions/upload-artifact@v4
+      - name: copy files via scp
+        uses: appleboy/scp-action@v0.1.7
         with:
-          name: server binary
-          path: mecha.dev
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: "mecha.dev, templates/*, content/*, public/*"
+          target: /app
+      - name: restart server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: sudo systemctl restart ${{ secrets.DEPLOY_RESTART_SERVICE }}
