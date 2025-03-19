@@ -16,7 +16,10 @@ func GetAll() map[string]*Project {
 func LoadFromDir(dir string) error {
 	slog.Info("projects: loading projects into cache from `" + dir + "`")
 	entries, err := os.ReadDir(dir)
-	if err != nil {
+
+	if os.IsNotExist(err) {
+		entries = []os.DirEntry{}
+	} else if err != nil {
 		return err
 	}
 

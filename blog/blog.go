@@ -197,7 +197,10 @@ func LoadPostFromFile(file string) error {
 func LoadPostsFromDir(dir string) error {
 	slog.Info("blog: loading blog posts from `" + dir + "`")
 	entries, err := os.ReadDir(dir)
-	if err != nil {
+
+	if os.IsNotExist(err) {
+		entries = []os.DirEntry{}
+	} else if err != nil {
 		return err
 	}
 
