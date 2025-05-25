@@ -46,7 +46,7 @@ func createHttpHandler() http.Handler {
 	projectsFs := http.StripPrefix("/projects", http.FileServer(http.Dir("public/projects")))
 	mux.HandleFunc("/projects/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/projects/" {
-			views.Write("templates/projects.gotmpl", w, projects.GetAll())
+			views.Write("projects.gotmpl", w, projects.GetAll())
 		} else {
 			projectsFs.ServeHTTP(w, r)
 		}
@@ -78,7 +78,7 @@ func createHttpHandler() http.Handler {
 
 		numPages := int(math.Ceil(float64(total) / float64(pageSize)))
 
-		views.Write("templates/blog.gotmpl", w, map[string]any{
+		views.Write("blog.gotmpl", w, map[string]any{
 			"Posts":    posts,
 			"Search":   search,
 			"Page":     page,
@@ -90,13 +90,13 @@ func createHttpHandler() http.Handler {
 		id := r.PathValue("id")
 		post, err := blog.GetPost(id)
 		if err == nil {
-			views.Write("templates/blog-post.gotmpl", w, post)
+			views.Write("blog-post.gotmpl", w, post)
 		} else if errors.Is(err, sql.ErrNoRows) {
 			w.WriteHeader(404)
-			views.Write("templates/404.gotmpl", w, nil)
+			views.Write("404.gotmpl", w, nil)
 		} else {
 			w.WriteHeader(500)
-			views.Write("templates/500.gotmpl", w, err)
+			views.Write("500.gotmpl", w, err)
 		}
 	})
 
@@ -114,7 +114,7 @@ func createHttpHandler() http.Handler {
 		err = blog.WriteFeed(w, NumPostsPerPage, page, format)
 		if err != nil {
 			w.WriteHeader(500)
-			views.Write("templates/500.gotmpl", w, err)
+			views.Write("500.gotmpl", w, err)
 		}
 	})
 
@@ -123,7 +123,7 @@ func createHttpHandler() http.Handler {
 			"ProYears":       time.Now().Year() - 2013,
 			"HobbyYearsMore": 2013 - 2006,
 		}
-		views.Write("templates/about.gotmpl", w, data)
+		views.Write("about.gotmpl", w, data)
 	})
 
 	mux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
@@ -132,17 +132,17 @@ func createHttpHandler() http.Handler {
 	})
 
 	mux.HandleFunc("/500", func(w http.ResponseWriter, r *http.Request) {
-		views.Write("templates/500.gotmpl", w, errors.New("something is about to blow"))
+		views.Write("500.gotmpl", w, errors.New("something is about to blow"))
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			views.Write("templates/home.gotmpl", w, map[string]any{
+			views.Write("home.gotmpl", w, map[string]any{
 				"Version": Version,
 			})
 		} else {
 			w.WriteHeader(404)
-			views.Write("templates/404.gotmpl", w, nil)
+			views.Write("404.gotmpl", w, nil)
 		}
 	})
 

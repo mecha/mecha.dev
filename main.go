@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"path"
 	"strconv"
 	"strings"
 	"syscall"
@@ -66,6 +67,7 @@ func main() {
 		startViewTemplateFileWatcher()
 	}
 
+	views.TemplateFS = getFS(TemplatesDir)
 	go runHttpServer()
 
 	intSig := make(chan os.Signal, 1)
@@ -247,7 +249,7 @@ func startViewTemplateFileWatcher() {
 	slog.Debug("main: starting view template file watcher")
 	tmplWatcher := NewDirWatcher(TemplatesDir, func(event fsnotify.Event) {
 		if event.Has(fsnotify.Write) {
-			tmplFile := event.Name
+			tmplFile := path.Base(event.Name)
 			slog.Debug("main: invalidating cached view template", "file", tmplFile)
 			views.ClearCache(tmplFile)
 		}
