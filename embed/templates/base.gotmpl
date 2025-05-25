@@ -83,14 +83,13 @@
     <label>
         <span>colorscheme =</span>
         <select id="theme-selector" onchange="setTheme(event.target.value)">
-            <option>mecha</option>
+            <option>viridescent</option>
             <option>tokyonight</option>
-            <option>rose pine</option>
             <option>catppuccin</option>
+            <option>rose pine</option>
             <option>nord</option>
             <option>gruvbox</option>
             <option>slate</option>
-            <option>viridescent</option>
             <option>retina slayer</option>
             <option>lsd</option>
         </select>
@@ -100,7 +99,7 @@
 {{define "theme-selector-js"}}
     <script>
         function getTheme() {
-            return localStorage.getItem("theme") || "mecha";
+            return localStorage.getItem("theme") || "viridescent";
         }
 
         /** @param {string} theme */

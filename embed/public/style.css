@@ -651,17 +651,6 @@ html[data-darkreader-mode] {
     --logo: var(--line);
 }
 
-[theme="mecha"] {
-    --bg: #15221f;
-    --fg: #e7ffee;
-    --box: #1e3530;
-    --subtle: #799785;
-    --accent: #bfe690;
-    --link: #80e1a1;
-    --line: #64ffcc;
-    --selection: var(--accent);
-}
-
 [theme="viridescent"] {
     --bg: #2c3333;
     --fg: #e9f5db;
