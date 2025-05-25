@@ -33,12 +33,13 @@ func runHttpServer() {
 func createHttpHandler() http.Handler {
 	mux := http.NewServeMux()
 
-	assetsFs := http.StripPrefix("/assets", http.FileServer(http.Dir("public/assets")))
+	publicFS := http.FS(getFS("embed/public"))
+	publicHandler := http.StripPrefix("/assets", http.FileServer(publicFS))
 	mux.HandleFunc("/assets/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/assets/" {
 			w.WriteHeader(404) // prevent listing contents of assets dir
 		} else {
-			assetsFs.ServeHTTP(w, r)
+			publicHandler.ServeHTTP(w, r)
 		}
 	})
 

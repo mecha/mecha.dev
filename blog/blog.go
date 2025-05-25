@@ -5,8 +5,6 @@ import (
 	"errors"
 	"log"
 	"log/slog"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -176,56 +174,6 @@ func InsertPost(post *Post) error {
 
 	_, err = stmt.Exec(post.Slug, post.Title, post.Excerpt, post.Body, post.Date.Format(time.RFC3339), post.Public)
 	return err
-}
-
-// Loads a post from a file
-func LoadPostFromFile(file string) error {
-	post, err := ParsePostFile(file)
-	if err != nil {
-		return err
-	}
-
-	err = InsertPost(post)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Loads the blog database content from post files in a given directory.
-func LoadPostsFromDir(dir string) error {
-	slog.Info("blog: loading blog posts from `" + dir + "`")
-	entries, err := os.ReadDir(dir)
-
-	if os.IsNotExist(err) {
-		entries = []os.DirEntry{}
-	} else if err != nil {
-		return err
-	}
-
-	num := 0
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-
-		name := entry.Name()
-		if !strings.HasSuffix(name, ".md") {
-			continue
-		}
-
-		err := LoadPostFromFile(dir + "/" + name)
-		if err != nil {
-			return err
-		}
-
-		num++
-	}
-
-	slog.Info("blog: loaded " + strconv.Itoa(num) + " blog posts")
-
-	return nil
 }
 
 func DeletePost(slug string) (bool, error) {

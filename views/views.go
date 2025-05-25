@@ -1,15 +1,18 @@
 package views
 
 import (
+	"embed"
 	t "html/template"
 	"io"
 	"log"
 	"log/slog"
 )
 
-const baseTmplPath = "templates/base.gotmpl"
-
+//go:embed templates/*
+var viewFS embed.FS
 var cache = map[string]*t.Template{}
+
+const baseTmplPath = "templates/base.gotmpl"
 
 // Writes a view template to a writer with the given data. Failure will not be tolerated.
 func Write(filename string, w io.Writer, data any) {
@@ -33,10 +36,10 @@ func getTemplate(filepath string) *t.Template {
 // Creates a template object from a template file
 func createTemplate(filepath string) *t.Template {
 	if filepath == baseTmplPath {
-		return t.Must(t.ParseFiles(baseTmplPath)).Funcs(funcMap)
+		return t.Must(t.ParseFS(viewFS, baseTmplPath)).Funcs(funcMap)
 	} else {
 		base := getTemplate(baseTmplPath)
-		tmpl := t.Must(t.Must(base.Clone()).ParseFiles(filepath))
+		tmpl := t.Must(t.Must(base.Clone()).ParseFS(viewFS, filepath))
 		return tmpl
 	}
 }

@@ -1,11 +1,15 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -15,32 +19,48 @@ import (
 	"github.com/mecha/mecha.dev/views"
 )
 
-const (
-	PostsDir    = "content/posts"
-	ProjectsDir = "content/projects"
-)
-
 var (
 	Flags   = FlagsObj{}
-	Version = "<unknown>"
+	Version = "dev"
+	//go:embed embed
+	embedFS embed.FS
 )
 
 type FlagsObj struct {
-	Verbose      bool
-	Quiet        bool
-	Watch        bool
-	PortNum      int
+	Verbose bool
+	Quiet   bool
+	Watch   bool
+	PortNum int
+	NoEmbed bool
 }
+
+const (
+	PostsDir     = "embed/content/posts"
+	ProjectsDir  = "embed/content/projects"
+	TemplatesDir = "embed/templates"
+)
 
 func main() {
 	parseFlags()
 
-	initLogger()
-	initBlog()
-	initProjects()
-	initVersion()
+	if Flags.Quiet {
+		slog.SetLogLoggerLevel(slog.LevelError.Level())
+	} else if Flags.Verbose {
+		slog.SetLogLoggerLevel(slog.LevelDebug.Level())
+	} else {
+		slog.SetLogLoggerLevel(slog.LevelInfo.Level())
+	}
 
-	if Flags.Watch {
+	if err := loadBlog(); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+	if err := loadProjects(); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+
+	if Flags.NoEmbed && Flags.Watch {
 		startPostFileWatcher()
 		startProjectFileWatcher()
 		startViewTemplateFileWatcher()
@@ -68,52 +88,112 @@ func parseFlags() {
 		})
 	}
 	Flags = FlagsObj{}
-	flag.BoolVar(&Flags.Verbose, "v", false, "Enables debug logging.")
-	flag.BoolVar(&Flags.Quiet, "q", false, "Disables all non-error logging.")
-	flag.BoolVar(&Flags.Watch, "w", false, "Watch blog post and view template files for changes.")
-	flag.IntVar(&Flags.PortNum, "p", 8080, "The HTTP port to serve through.")
+	flag.BoolVar(&Flags.Verbose, "verbose", false, "Enables debug logging.")
+	flag.BoolVar(&Flags.Quiet, "quiet", false, "Disables all non-error logging.")
+	flag.BoolVar(&Flags.Watch, "watch", false, "Watch blog post and view template files for changes.")
+	flag.IntVar(&Flags.PortNum, "port", 8080, "The HTTP port to serve through.")
+	flag.BoolVar(&Flags.NoEmbed, "noembed", false, "Reads files from the OS filesystem instead of the embedded filesystem.")
 	flag.Parse()
 }
 
-func initLogger() {
-	if Flags.Quiet {
-		slog.SetLogLoggerLevel(slog.LevelError.Level())
-	} else if Flags.Verbose {
-		slog.SetLogLoggerLevel(slog.LevelDebug.Level())
+func getFS(path string) fs.FS {
+	if Flags.NoEmbed {
+		return os.DirFS(path)
 	} else {
-		slog.SetLogLoggerLevel(slog.LevelInfo.Level())
+		fsys, err := fs.Sub(embedFS, path)
+		if err != nil {
+			panic(err)
+		}
+		return fsys
 	}
 }
 
-func initBlog() {
+func loadBlog() error {
 	err := blog.InitDB()
 	if err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
+		return err
 	}
 
-	err = blog.LoadPostsFromDir(PostsDir)
-	if err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
+	fsys := getFS(PostsDir)
+	entries, err := fs.ReadDir(fsys, ".")
+
+	if os.IsNotExist(err) {
+		entries = []os.DirEntry{}
+	} else if err != nil {
+		return err
 	}
+
+	num := 0
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".md") {
+			continue
+		}
+
+		file, err := fsys.Open(name)
+		if err != nil {
+			return err
+		}
+
+		post, err := blog.ParsePost(file)
+		if err != nil {
+			return err
+		}
+
+		err = blog.InsertPost(post)
+		if err != nil {
+			return err
+		}
+
+		num++
+	}
+
+	slog.Info("blog: loaded " + strconv.Itoa(num) + " blog posts")
+
+	return nil
 }
 
-func initProjects() {
-	err := projects.LoadFromDir(ProjectsDir)
-	if err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
-	}
-}
+func loadProjects() error {
+	fsys := getFS(ProjectsDir)
+	entries, err := fs.ReadDir(fsys, ".")
 
-func initVersion() {
-	raw, err := os.ReadFile(".git/refs/heads/main")
-	if err == nil {
-		Version = string(raw[:8])
-	} else {
-		slog.Warn(err.Error())
+	if os.IsNotExist(err) {
+		entries = []os.DirEntry{}
+	} else if err != nil {
+		return err
 	}
+
+	num := 0
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".md") {
+			continue
+		}
+
+		file, err := fsys.Open(name)
+		if err != nil {
+			return err
+		}
+
+		project, err := projects.Parse(file)
+		if err != nil {
+			return err
+		}
+
+		projects.LoadIntoCache(name, project)
+		num++
+	}
+
+	slog.Info("projects: loaded " + strconv.Itoa(num) + " projects")
+	return nil
 }
 
 func startPostFileWatcher() {
@@ -124,7 +204,13 @@ func startPostFileWatcher() {
 			postFile := event.Name
 			slog.Debug("main: reloading post", "file", postFile)
 
-			err := blog.LoadPostFromFile(postFile)
+			post, err := blog.ParsePostFile(postFile)
+			if err != nil {
+				slog.Error(err.Error())
+				return
+			}
+
+			err = blog.InsertPost(post)
 			if err != nil {
 				slog.Error(err.Error())
 			}
@@ -159,7 +245,7 @@ func startProjectFileWatcher() {
 
 func startViewTemplateFileWatcher() {
 	slog.Debug("main: starting view template file watcher")
-	tmplWatcher := NewDirWatcher("./templates", func(event fsnotify.Event) {
+	tmplWatcher := NewDirWatcher(TemplatesDir, func(event fsnotify.Event) {
 		if event.Has(fsnotify.Write) {
 			tmplFile := event.Name
 			slog.Debug("main: invalidating cached view template", "file", tmplFile)

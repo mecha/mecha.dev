@@ -3,6 +3,7 @@ package projects
 import (
 	"log/slog"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 )
@@ -45,13 +46,17 @@ func LoadFromDir(dir string) error {
 	return nil
 }
 
-func LoadFromFile(path string) (*Project, error) {
-	project, err := Parse(path)
+func LoadIntoCache(id string, project *Project) {
+	delete(cache, id)
+	cache[id] = project
+}
+
+func LoadFromFile(filepath string) (*Project, error) {
+	project, err := ParseFile(filepath)
 	if err != nil {
 		return nil, err
 	}
-
-	delete(cache, path)
-	cache[path] = project
+	id := path.Base(filepath)
+	LoadIntoCache(id, project)
 	return project, nil
 }

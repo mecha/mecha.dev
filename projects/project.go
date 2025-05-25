@@ -2,7 +2,9 @@ package projects
 
 import (
 	"html/template"
+	"io"
 	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/mecha/mecha.dev/md"
@@ -17,8 +19,8 @@ type Project struct {
 	Body  template.HTML
 }
 
-func Parse(filepath string) (*Project, error) {
-	doc, err := md.ParseFileWithCache(filepath)
+func Parse(reader io.Reader) (*Project, error) {
+	doc, err := md.Parse(reader)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +42,17 @@ func Parse(filepath string) (*Project, error) {
 		case "langs":
 			project.Langs = val
 		default:
-			slog.Warn("projects: unknown property", "file", filepath, "property", key)
+			slog.Warn("projects: unknown property", "property", key)
 		}
 	}
 
 	return project, nil
+}
+
+func ParseFile(filepath string) (*Project, error) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(file)
 }

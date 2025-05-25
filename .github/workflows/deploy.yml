@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USERNAME }}
           port: ${{ secrets.DEPLOY_PORT }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "mecha.dev, templates/*, content/*, public/*, .git/refs/heads/main"
+          source: "mecha.dev"
           target: /app
       - name: restart server
         uses: appleboy/ssh-action@v1

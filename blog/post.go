@@ -2,6 +2,7 @@ package blog
 
 import (
 	"html/template"
+	"io"
 	"log/slog"
 	"os"
 	"path"
@@ -21,17 +22,16 @@ type Post struct {
 }
 
 func ParsePostFile(filepath string) (*Post, error) {
-	raw, err := os.ReadFile(filepath)
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	post, err := ParsePost(raw)
+	post, err := ParsePost(file)
 	if err != nil {
 		return nil, err
 	}
 
-	post.Slug = PostSlugFromFile(filepath)
 	return post, nil
 }
 
@@ -42,10 +42,10 @@ func PostSlugFromFile(filepath string) string {
 	return slug
 }
 
-func ParsePost(raw []byte) (*Post, error) {
+func ParsePost(reader io.Reader) (*Post, error) {
 	post := &Post{}
 
-	doc, err := md.Parse(raw)
+	doc, err := md.Parse(reader)
 	if err != nil {
 		return post, err
 	}
@@ -54,6 +54,8 @@ func ParsePost(raw []byte) (*Post, error) {
 
 	for name, value := range doc.Head {
 		switch strings.ToLower(name) {
+		case "slug":
+			post.Slug = value
 		case "title":
 			post.Title = value
 		case "excerpt":

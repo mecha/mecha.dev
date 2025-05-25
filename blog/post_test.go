@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"bytes"
 	"testing"
 	"time"
 
@@ -23,7 +24,7 @@ func TestParsePost(t *testing.T) {
 		panic(err)
 	}
 
-	post, err := ParsePost(rawPostMd)
+	post, err := ParsePost(bytes.NewReader(rawPostMd))
 
 	assert.Nil(t, err, "should not err")
 	assert.Equal(t, "", post.Slug)
@@ -31,8 +32,4 @@ func TestParsePost(t *testing.T) {
 	assert.True(t, post.Public)
 	assert.True(t, post.Date.Equal(expDate))
 	assert.Equal(t, "<p>hello <strong>world</strong></p>", string(post.Body))
-}
-
-func TestPostSlugFromFile(t *testing.T) {
-	assert.Equal(t, "hello-world-post", PostSlugFromFile("content/posts/hello-world-post.md"))
 }

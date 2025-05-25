@@ -2,8 +2,8 @@ package md
 
 import (
 	"bufio"
-	"bytes"
 	"html/template"
+	"io"
 	"log/slog"
 	"os"
 	"strings"
@@ -24,18 +24,18 @@ type ParsedDoc struct {
 
 // Parses a markdown file with front-matter support.
 func ParseFile(filepath string) (*ParsedDoc, error) {
-	raw, err := os.ReadFile(filepath)
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}
-	return Parse(raw)
+	return Parse(file)
 }
 
 // Parses a markdown string with front-matter support.
-func Parse(raw []byte) (*ParsedDoc, error) {
+func Parse(reader io.Reader) (*ParsedDoc, error) {
 	head := make(map[string]string)
 
-	scanner := bufio.NewScanner(bytes.NewReader(raw))
+	scanner := bufio.NewScanner(reader)
 	for lineNum := 0; scanner.Scan(); lineNum++ {
 		lineStr := strings.TrimSpace(scanner.Text())
 
