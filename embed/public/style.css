@@ -666,13 +666,13 @@ html[data-darkreader-mode] {
     --bg: #2c3333;
     --fg: #e9f5db;
     --box: #232828;
-    --accent: #e9f5db;
-    --subtle: #84a98c;
-    --widget: #a0d595;
-    --line: #e6f0c0;
+    --accent: var(--fg);
+    --subtle: #ecefeb;
+    --widget: var(--logo);
+    --line: var(--fg);
     --link: #95d5b2;
     --logo: #a0d595;
-    --selection: #95d5b2;
+    --selection: var(--link);
 }
 
 [theme="tokyonight"] {
