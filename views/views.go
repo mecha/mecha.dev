@@ -16,7 +16,7 @@ const baseTmpl = "base.gotmpl"
 func Write(filename string, w io.Writer, data any) {
 	err := getTemplate(filename).Execute(w, data)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error writing view: " + err.Error())
 	}
 }
 

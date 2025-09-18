@@ -30,7 +30,7 @@ func intRange(start, end int) (stream chan int) {
 func mdFile(path string) template.HTML {
 	doc, err := md.ParseFileWithCache(path)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("error parsing markdown file: " + err.Error())
 		return template.HTML("")
 	}
 	return doc.Body

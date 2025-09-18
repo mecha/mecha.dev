@@ -44,7 +44,7 @@ func (dw *DirWatcher) Start() error {
 				if !ok {
 					break loop
 				}
-				slog.Error(err.Error())
+				slog.Error("fsnotify error: " + err.Error())
 
 			case _ = <-dw.stopChan:
 				break loop

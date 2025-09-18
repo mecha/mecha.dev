@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"errors"
-	"log"
 	"log/slog"
 	"math"
 	"net/http"
@@ -26,7 +25,7 @@ func runHttpServer() {
 	err := http.ListenAndServe(addr, handler)
 
 	if !errors.Is(err, http.ErrServerClosed) {
-		slog.Error(err.Error())
+		slog.Error("unexpected server error:" + err.Error())
 	}
 }
 
@@ -68,12 +67,16 @@ func createHttpHandler() http.Handler {
 
 		posts, err := blog.SearchPosts(search, pageSize, pageSize*(page-1))
 		if err != nil {
-			log.Fatal(err)
+			slog.Error("error searching posts: " + err.Error())
+			w.WriteHeader(500)
+			return
 		}
 
 		total, err := blog.NumPosts()
 		if err != nil {
-			log.Fatal(err)
+			slog.Error("error counting posts: " + err.Error())
+			w.WriteHeader(500)
+			return
 		}
 
 		numPages := int(math.Ceil(float64(total) / float64(pageSize)))

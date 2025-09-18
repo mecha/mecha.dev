@@ -53,11 +53,11 @@ func main() {
 	}
 
 	if err := loadBlog(); err != nil {
-		slog.Error(err.Error())
+		slog.Error("error loading blog: " + err.Error())
 		os.Exit(1)
 	}
 	if err := loadProjects(); err != nil {
-		slog.Error(err.Error())
+		slog.Error("error loading projects: " + err.Error())
 		os.Exit(1)
 	}
 
