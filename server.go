@@ -146,5 +146,5 @@ func createHttpHandler() http.Handler {
 		}
 	})
 
-	return mux
+	return gzipHandler(mux)
 }
