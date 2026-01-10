@@ -63,7 +63,7 @@
 
         <footer>
             {{block "footer-left" .}}
-                <p>Copyright 2025 &copy; mecha.dev</p>
+            <p>Copyright {{Now.UTC.Year}} &copy; mecha.dev</p>
             {{end}}
             {{block "footer-right" .}}
                 {{template "theme-selector"}}

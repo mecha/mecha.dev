@@ -34,7 +34,7 @@ func getTemplate(filepath string) *t.Template {
 // Creates a template object from a template file
 func createTemplate(filepath string) *t.Template {
 	if filepath == baseTmpl {
-		return t.Must(t.ParseFS(TemplateFS, baseTmpl)).Funcs(funcMap)
+		return t.Must(t.New("base.gotmpl").Funcs(funcMap).ParseFS(TemplateFS, baseTmpl))
 	} else {
 		base := getTemplate(baseTmpl)
 		tmpl := t.Must(t.Must(base.Clone()).ParseFS(TemplateFS, filepath))

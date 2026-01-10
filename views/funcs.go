@@ -3,12 +3,14 @@ package views
 import (
 	"html/template"
 	"log/slog"
+	"time"
 
 	"github.com/mecha/mecha.dev/md"
 )
 
 // The functions available in view templates
 var funcMap = template.FuncMap{
+	"Now": time.Now,
 	"IntRange": intRange,
 	"MdFile": mdFile,
 }
