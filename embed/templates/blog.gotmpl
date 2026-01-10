@@ -5,15 +5,13 @@
 {{define "content"}}
     <section id="blog">
         <header>
-            <div>
-                <h1>blog</h1>
-                <p class="sub-rss" title="I don't want your email address.">
-                    Subscribe via
-                    <a href="/blog/feed?format=rss" target="_blank">RSS</a>,
-                    <a href="/blog/feed?format=atom" target="_blank">Atom</a>, or
-                    <a href="/blog/feed?format=json" target="_blank">JSON</a> feed.
-                </p>
-            </div>
+            <h1>blog</h1>
+            <p title="I don't want your email address.">
+                Subscribe via
+                <a href="/blog/feed?format=rss" target="_blank">RSS</a>,
+                <a href="/blog/feed?format=atom" target="_blank">Atom</a>, or
+                <a href="/blog/feed?format=json" target="_blank">JSON</a> feed.
+            </p>
             <form method="get" action="/blog">
                 <input
                     type="search"

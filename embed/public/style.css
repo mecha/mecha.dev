@@ -313,12 +313,12 @@ hr,
 .main-layout {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    gap: 3rem;
+    gap: 1.5rem;
     margin-inline: auto;
     width: 100%;
     max-width: 960px;
     min-height: 100lvh;
-    padding-inline: 1rem;
+    padding-inline: 1.25rem;
 
     >header {
         display: grid;
@@ -331,9 +331,9 @@ hr,
             color: var(--logo);
             font-weight: bold;
             white-space: pre;
-            font-size: 0.6rem;
+            font-size: 0.85rem;
             line-height: 0.85;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         }
     }
 
@@ -351,6 +351,7 @@ hr,
     display: flex;
     flex-wrap: wrap;
     gap: 0 1rem;
+    color: var(--link);
 
     a {
         display: inline-block;
@@ -441,15 +442,13 @@ hr,
     gap: 3rem;
 
     header {
-        display: grid;
-        gap: 1rem;
-
         h1 {
             word-break: keep-all;
         }
 
         form {
             position: relative;
+            margin-top: 0.5rem;
 
             input {
                 width: 100%;
@@ -477,10 +476,6 @@ hr,
             }
         }
     }
-
-    .sub-rss {
-        font-size: 0.8rem;
-    }
 }
 
 .post {
@@ -493,7 +488,6 @@ hr,
 
         time {
             color: var(--subtle);
-            font-size: 0.8rem;
         }
     }
 
