@@ -50,7 +50,7 @@
 
 {{define "main-layout"}}
     <div class="main-layout">
-        <header class="eq-bot">
+        <header>
             <a class="logo bare" href="/" aria-label="Home">{{template "logo"}}</a>
             <nav id="topnav">
                 {{template "nav-links" .}}
@@ -61,7 +61,7 @@
             {{block "content" .}}{{end}}
         </main>
 
-        <footer class="eq-top">
+        <footer>
             {{block "footer-left" .}}
                 <p>Copyright 2025 &copy; mecha.dev</p>
             {{end}}
