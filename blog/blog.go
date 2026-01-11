@@ -13,7 +13,6 @@ import (
 
 var db *sql.DB
 
-// Initializes the blog database.
 func InitDB() error {
 	if db != nil {
 		return errors.New("blog is already initialized")
@@ -67,7 +66,6 @@ func InitDB() error {
 	return nil
 }
 
-// Tears down the blog's database.
 func DestroyDB() {
 	if db == nil {
 		return
@@ -81,8 +79,7 @@ func DestroyDB() {
 	db = nil
 }
 
-// Get a single blog post by its slug.
-func GetPost(slug string) (*Post, error) {
+func GetPostBySlug(slug string) (*Post, error) {
 	stmt, err := db.Prepare(`
 		SELECT slug, title, excerpt, body, date, public
 		FROM posts
@@ -109,8 +106,7 @@ func GetPost(slug string) (*Post, error) {
 	return post, err
 }
 
-// Gets the total number of public posts
-func NumPosts() (int, error) {
+func NumPublicPosts() (int, error) {
 	row := db.QueryRow("SELECT COUNT(slug) FROM posts WHERE public = true")
 	count := 0
 	err := row.Scan(&count)

@@ -51,7 +51,7 @@ func TestGetPost(t *testing.T) {
 	err = InsertPost(insertPost)
 	assert.Nil(t, err, "should insert post without error")
 
-	post, err := GetPost("test")
+	post, err := GetPostBySlug("test")
 	assert.Nil(t, err, "should get post without error")
 	assert.Equal(t, insertPost, post)
 }
@@ -73,7 +73,7 @@ func TestDeletePost(t *testing.T) {
 	err = InsertPost(insertPost)
 	assert.Nil(t, err, "should insert post without error")
 
-	_, err = GetPost("test")
+	_, err = GetPostBySlug("test")
 	assert.Nil(t, err, "should get post without error")
 
 	deleted, err := DeletePost("test")
@@ -98,7 +98,7 @@ func TestNumPosts(t *testing.T) {
 		assert.Nil(t, err, "should insert post without error")
 	}
 
-	num, err := NumPosts()
+	num, err := NumPublicPosts()
 	assert.Nil(t, err, "should count posts without error")
 	assert.Equal(t, 3, num)
 }

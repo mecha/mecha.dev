@@ -72,7 +72,7 @@ func createHttpHandler() http.Handler {
 			return
 		}
 
-		total, err := blog.NumPosts()
+		total, err := blog.NumPublicPosts()
 		if err != nil {
 			slog.Error("error counting posts: " + err.Error())
 			w.WriteHeader(500)
@@ -91,7 +91,7 @@ func createHttpHandler() http.Handler {
 
 	mux.HandleFunc("/blog/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		post, err := blog.GetPost(id)
+		post, err := blog.GetPostBySlug(id)
 		if err == nil {
 			views.Write("blog-post.gotmpl", w, post)
 		} else if errors.Is(err, sql.ErrNoRows) {
