@@ -77,7 +77,7 @@ func main() {
 	signal.Notify(intSig, os.Interrupt, syscall.SIGTERM)
 	<-intSig
 
-	slog.Debug("Shutting down...")
+	slog.Info("Shutting down...")
 	blog.DestroyDB()
 }
 
