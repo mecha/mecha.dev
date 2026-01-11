@@ -651,9 +651,9 @@ html[data-darkreader-mode] {
     --fg: #e9f5db;
     --box: #232828;
     --accent: var(--fg);
-    --subtle: #ecefeb;
+    --subtle: #84a98c;
     --widget: var(--logo);
-    --line: var(--fg);
+    --line: var(--subtle);
     --link: #95d5b2;
     --logo: #a0d595;
     --selection: var(--link);
