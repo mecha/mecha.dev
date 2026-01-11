@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"strings"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -118,19 +119,37 @@ func startPostFileWatcher() {
 	fsys := os.DirFS(".")
 
 	postWatcher := NewDirWatcher(PostsDir, func(event fsnotify.Event) {
-		if event.Has(fsnotify.Write) {
-			postFile := event.Name
-			slog.Debug("main: reloading blog post", "file", postFile)
+		filename := event.Name
+		slug := blog.SlugFromFilePath(filename)
+		slogSlugAttr := slog.String("slug", slug)
+		slogFileAttr := slog.String("file", filename)
 
-			post, err := blog.ParsePostFile(fsys, postFile)
+		if strings.HasSuffix(filename, "~") {
+			return
+		}
+
+		if event.Has(fsnotify.Remove | fsnotify.Rename) {
+			slog.Debug("main: removing blog post", slogFileAttr)
+
+			_, err := blog.DeletePost(slug)
 			if err != nil {
-				slog.Error("failed to parse blog post file", slog.String("cause", err.Error()))
+				slog.Error("failed to delete blog post", slogSlugAttr, slogFileAttr)
+				return
+			}
+		}
+
+		if event.Has(fsnotify.Create | fsnotify.Write) {
+			slog.Debug("main: loading blog post", slogFileAttr)
+
+			post, err := blog.ParsePostFile(fsys, filename)
+			if err != nil {
+				slog.Error("failed to parse blog post file", slogFileAttr, slog.String("cause", err.Error()))
 				return
 			}
 
 			err = blog.InsertPost(post)
 			if err != nil {
-				slog.Error("failed to insert/update blog post", slog.String("cause", err.Error()))
+				slog.Error("failed to insert/update blog post", slogFileAttr, slog.String("cause", err.Error()))
 				return
 			}
 		}

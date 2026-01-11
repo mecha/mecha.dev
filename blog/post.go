@@ -34,9 +34,7 @@ func ParsePostFile(fsys fs.FS, filepath string) (*Post, error) {
 	}
 
 	if post.Slug == "" {
-		base := path.Base(filepath)
-		ext := path.Ext(filepath)
-		post.Slug = base[:len(base)-len(ext)]
+		post.Slug = SlugFromFilePath(filepath)
 	}
 
 	return post, nil
@@ -74,4 +72,10 @@ func ParsePost(reader io.Reader) (*Post, error) {
 	}
 
 	return post, nil
+}
+
+func SlugFromFilePath(filepath string) string {
+	base := path.Base(filepath)
+	ext := path.Ext(filepath)
+	return base[:len(base)-len(ext)]
 }
