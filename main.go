@@ -166,13 +166,26 @@ func startProjectFileWatcher() {
 	fsys := os.DirFS(".")
 
 	mdWatcher := NewDirWatcher(ProjectsDir, func(event fsnotify.Event) {
-		if event.Has(fsnotify.Write) {
-			projFile := event.Name
-			slog.Debug("main: reloading project file", "file", projFile)
-			md.ClearCache(projFile)
-			_, err := projects.LoadFromFile(fsys, projFile)
+		filename := event.Name
+		projId := projects.IDFromFilePath(filename)
+		slogIdAttr := slog.String("id", projId)
+		slogFileAttr := slog.String("file", filename)
+
+		if strings.HasSuffix(filename, "~") {
+			return
+		}
+
+		if event.Has(fsnotify.Remove | fsnotify.Rename) {
+			slog.Debug("main: removing project", slogIdAttr, slogFileAttr)
+			projects.Delete(projId)
+			md.ClearCache(filename)
+		}
+
+		if event.Has(fsnotify.Create | fsnotify.Write) {
+			slog.Debug("main: loading project", slogIdAttr, slogFileAttr)
+			_, err := projects.LoadFromFile(fsys, filename)
 			if err != nil {
-				slog.Error("main: failed to reload project file", slog.String("cause", err.Error()))
+				slog.Error("main: failed to reload project", slogFileAttr, slog.String("cause", err.Error()))
 				return
 			}
 		}
