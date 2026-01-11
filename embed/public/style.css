@@ -351,7 +351,6 @@ hr,
     display: flex;
     flex-wrap: wrap;
     gap: 0 1rem;
-    color: var(--link);
 
     a {
         display: inline-block;
@@ -363,6 +362,10 @@ hr,
                 content: "[*";
             }
         }
+    }
+
+    .divider {
+        color: var(--line);
     }
 }
 
