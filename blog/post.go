@@ -41,7 +41,9 @@ func ParsePostFile(fsys fs.FS, filepath string) (*Post, error) {
 }
 
 func ParsePost(reader io.Reader) (*Post, error) {
-	post := &Post{}
+	post := &Post{
+		Date: time.Now(),
+	}
 
 	doc, err := md.Parse(reader)
 	if err != nil {
