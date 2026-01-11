@@ -3,8 +3,10 @@ package blog
 import (
 	"database/sql"
 	"errors"
+	"io/fs"
 	"log"
 	"log/slog"
+	"os"
 	"strings"
 	"time"
 
@@ -77,6 +79,44 @@ func DestroyDB() {
 		log.Fatal(err)
 	}
 	db = nil
+}
+
+func LoadFromFs(fsys fs.FS) (int, error) {
+	entries, err := fs.ReadDir(fsys, ".")
+
+	if os.IsNotExist(err) {
+		entries = []os.DirEntry{}
+	} else if err != nil {
+		return 0, err
+	}
+
+	num := 0
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".md") {
+			continue
+		}
+
+		post, err := ParsePostFile(fsys, name)
+		if err != nil {
+			return num, err
+		}
+
+		err = InsertPost(post)
+		if err != nil {
+			return num, err
+		}
+
+		num++
+	}
+
+	slog.Info("blog: loaded blog posts from filesystem", slog.Int("num", num))
+
+	return num, nil
 }
 
 func GetPostBySlug(slug string) (*Post, error) {

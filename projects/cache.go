@@ -1,10 +1,10 @@
 package projects
 
 import (
+	"io/fs"
 	"log/slog"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 )
 
@@ -14,14 +14,13 @@ func GetAll() map[string]*Project {
 	return cache
 }
 
-func LoadFromDir(dir string) error {
-	slog.Info("projects: loading projects into cache from `" + dir + "`")
-	entries, err := os.ReadDir(dir)
+func LoadFromFs(fsys fs.FS) (int, error) {
+	entries, err := fs.ReadDir(fsys, ".")
 
 	if os.IsNotExist(err) {
 		entries = []os.DirEntry{}
 	} else if err != nil {
-		return err
+		return 0, err
 	}
 
 	num := 0
@@ -35,15 +34,15 @@ func LoadFromDir(dir string) error {
 			continue
 		}
 
-		_, err := LoadFromFile(dir + "/" + name)
+		_, err := LoadFromFile(fsys, name)
 		if err != nil {
-			return err
+			return num, err
 		}
 		num++
 	}
 
-	slog.Info("projects: loaded " + strconv.Itoa(num) + " projects")
-	return nil
+	slog.Info("projects: loaded projects from fs", slog.Int("num", num))
+	return num, nil
 }
 
 func LoadIntoCache(id string, project *Project) {
@@ -51,7 +50,7 @@ func LoadIntoCache(id string, project *Project) {
 	cache[id] = project
 }
 
-func LoadFromFile(filepath string) (*Project, error) {
+func LoadFromFile(fsys fs.FS, filepath string) (*Project, error) {
 	project, err := ParseFile(filepath)
 	if err != nil {
 		return nil, err

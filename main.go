@@ -9,8 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"path"
-	"strconv"
-	"strings"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -52,12 +50,17 @@ func main() {
 		slog.SetLogLoggerLevel(slog.LevelInfo.Level())
 	}
 
-	if err := loadBlog(); err != nil {
-		slog.Error("error loading blog: " + err.Error())
+	if err := blog.InitDB(); err != nil {
+		slog.Error("error initializing blog", slog.String("cause", err.Error()))
 		os.Exit(1)
 	}
-	if err := loadProjects(); err != nil {
-		slog.Error("error loading projects: " + err.Error())
+	if _, err := blog.LoadFromFs(getFS(PostsDir)); err != nil {
+		slog.Error("error loading blog", slog.String("cause", err.Error()))
+		os.Exit(1)
+	}
+
+	if _, err := projects.LoadFromFs(getFS(ProjectsDir)); err != nil {
+		slog.Error("error loading projects", slog.String("cause", err.Error()))
 		os.Exit(1)
 	}
 
@@ -110,89 +113,6 @@ func getFS(path string) fs.FS {
 	}
 }
 
-func loadBlog() error {
-	err := blog.InitDB()
-	if err != nil {
-		return err
-	}
-
-	fsys := getFS(PostsDir)
-	entries, err := fs.ReadDir(fsys, ".")
-
-	if os.IsNotExist(err) {
-		entries = []os.DirEntry{}
-	} else if err != nil {
-		return err
-	}
-
-	num := 0
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-
-		name := entry.Name()
-		if !strings.HasSuffix(name, ".md") {
-			continue
-		}
-
-		post, err := blog.ParsePostFile(fsys, name)
-		if err != nil {
-			return err
-		}
-
-		err = blog.InsertPost(post)
-		if err != nil {
-			return err
-		}
-
-		num++
-	}
-
-	slog.Info("blog: loaded " + strconv.Itoa(num) + " blog posts")
-
-	return nil
-}
-
-func loadProjects() error {
-	fsys := getFS(ProjectsDir)
-	entries, err := fs.ReadDir(fsys, ".")
-
-	if os.IsNotExist(err) {
-		entries = []os.DirEntry{}
-	} else if err != nil {
-		return err
-	}
-
-	num := 0
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-
-		name := entry.Name()
-		if !strings.HasSuffix(name, ".md") {
-			continue
-		}
-
-		file, err := fsys.Open(name)
-		if err != nil {
-			return err
-		}
-
-		project, err := projects.Parse(file)
-		if err != nil {
-			return err
-		}
-
-		projects.LoadIntoCache(name, project)
-		num++
-	}
-
-	slog.Info("projects: loaded " + strconv.Itoa(num) + " projects")
-	return nil
-}
-
 func startPostFileWatcher() {
 	slog.Debug("main: starting post file watcher")
 	fsys := os.DirFS(".")
@@ -223,12 +143,14 @@ func startPostFileWatcher() {
 
 func startProjectFileWatcher() {
 	slog.Debug("main: starting project file watcher")
+	fsys := os.DirFS(".")
+
 	mdWatcher := NewDirWatcher(ProjectsDir, func(event fsnotify.Event) {
 		if event.Has(fsnotify.Write) {
 			projFile := event.Name
 			slog.Debug("main: reloading project file", "file", projFile)
 			md.ClearCache(projFile)
-			_, err := projects.LoadFromFile(projFile)
+			_, err := projects.LoadFromFile(fsys, projFile)
 			if err != nil {
 				slog.Error(err.Error())
 			}
