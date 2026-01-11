@@ -51,16 +51,16 @@ func main() {
 	}
 
 	if err := blog.InitDB(); err != nil {
-		slog.Error("error initializing blog", slog.String("cause", err.Error()))
+		slog.Error("failed to initialize blog", slog.String("cause", err.Error()))
 		os.Exit(1)
 	}
 	if _, err := blog.LoadFromFs(getFS(PostsDir)); err != nil {
-		slog.Error("error loading blog", slog.String("cause", err.Error()))
+		slog.Error("failed to load blog posts", slog.String("cause", err.Error()))
 		os.Exit(1)
 	}
 
 	if _, err := projects.LoadFromFs(getFS(ProjectsDir)); err != nil {
-		slog.Error("error loading projects", slog.String("cause", err.Error()))
+		slog.Error("failed to load projects", slog.String("cause", err.Error()))
 		os.Exit(1)
 	}
 
@@ -114,30 +114,31 @@ func getFS(path string) fs.FS {
 }
 
 func startPostFileWatcher() {
-	slog.Debug("main: starting post file watcher")
+	slog.Debug("main: starting blog post file watcher")
 	fsys := os.DirFS(".")
 
 	postWatcher := NewDirWatcher(PostsDir, func(event fsnotify.Event) {
 		if event.Has(fsnotify.Write) {
 			postFile := event.Name
-			slog.Debug("main: reloading post", "file", postFile)
+			slog.Debug("main: reloading blog post", "file", postFile)
 
 			post, err := blog.ParsePostFile(fsys, postFile)
 			if err != nil {
-				slog.Error(err.Error())
+				slog.Error("failed to parse blog post file", slog.String("cause", err.Error()))
 				return
 			}
 
 			err = blog.InsertPost(post)
 			if err != nil {
-				slog.Error(err.Error())
+				slog.Error("failed to insert/update blog post", slog.String("cause", err.Error()))
+				return
 			}
 		}
 	})
 
 	err := postWatcher.Start()
 	if err != nil {
-		slog.Error("main: error starting post file watcher: " + err.Error())
+		slog.Error("main: failed to start post file watcher", slog.String("cause", err.Error()))
 	}
 }
 
@@ -152,14 +153,15 @@ func startProjectFileWatcher() {
 			md.ClearCache(projFile)
 			_, err := projects.LoadFromFile(fsys, projFile)
 			if err != nil {
-				slog.Error(err.Error())
+				slog.Error("main: failed to reload project file", slog.String("cause", err.Error()))
+				return
 			}
 		}
 	})
 
 	err := mdWatcher.Start()
 	if err != nil {
-		slog.Error("main: error starting projects markdown file watcher: " + err.Error())
+		slog.Error("main: failed to start projects markdown file watcher", slog.String("cause", err.Error()))
 	}
 }
 
@@ -175,6 +177,6 @@ func startViewTemplateFileWatcher() {
 
 	err := tmplWatcher.Start()
 	if err != nil {
-		slog.Error("main: error starting view template file watcher: " + err.Error())
+		slog.Error("main: failed to start view template file watcher", slog.String("cause", err.Error()))
 	}
 }
