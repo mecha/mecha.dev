@@ -136,12 +136,7 @@ func loadBlog() error {
 			continue
 		}
 
-		file, err := fsys.Open(name)
-		if err != nil {
-			return err
-		}
-
-		post, err := blog.ParsePost(file)
+		post, err := blog.ParsePostFile(fsys, name)
 		if err != nil {
 			return err
 		}
@@ -200,13 +195,14 @@ func loadProjects() error {
 
 func startPostFileWatcher() {
 	slog.Debug("main: starting post file watcher")
+	fsys := os.DirFS(".")
 
 	postWatcher := NewDirWatcher(PostsDir, func(event fsnotify.Event) {
 		if event.Has(fsnotify.Write) {
 			postFile := event.Name
 			slog.Debug("main: reloading post", "file", postFile)
 
-			post, err := blog.ParsePostFile(postFile)
+			post, err := blog.ParsePostFile(fsys, postFile)
 			if err != nil {
 				slog.Error(err.Error())
 				return

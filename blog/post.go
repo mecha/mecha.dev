@@ -1,10 +1,11 @@
 package blog
 
 import (
+	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"log/slog"
-	"os"
 	"path"
 	"strings"
 	"time"
@@ -21,10 +22,10 @@ type Post struct {
 	Public  bool
 }
 
-func ParsePostFile(filepath string) (*Post, error) {
-	file, err := os.Open(filepath)
+func ParsePostFile(fsys fs.FS, filepath string) (*Post, error) {
+	file, err := fsys.Open(filepath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open post file: %w", err)
 	}
 
 	post, err := ParsePost(file)
@@ -32,14 +33,13 @@ func ParsePostFile(filepath string) (*Post, error) {
 		return nil, err
 	}
 
-	return post, nil
-}
+	if post.Slug == "" {
+		base := path.Base(filepath)
+		ext := path.Ext(filepath)
+		post.Slug = base[:len(base)-len(ext)]
+	}
 
-func PostSlugFromFile(filepath string) string {
-	base := path.Base(filepath)
-	ext := path.Ext(filepath)
-	slug := base[:len(base)-len(ext)]
-	return slug
+	return post, nil
 }
 
 func ParsePost(reader io.Reader) (*Post, error) {
@@ -47,7 +47,7 @@ func ParsePost(reader io.Reader) (*Post, error) {
 
 	doc, err := md.Parse(reader)
 	if err != nil {
-		return post, err
+		return post, fmt.Errorf("failed to parse post markdown: %w", err)
 	}
 
 	post.Body = doc.Body
