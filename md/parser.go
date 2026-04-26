@@ -55,11 +55,11 @@ func Parse(reader io.Reader) (*ParsedDoc, error) {
 		head[name] = value
 	}
 
-	mdStr := ""
+	var mdStr strings.Builder
 	for scanner.Scan() {
-		mdStr += scanner.Text() + "\n"
+		mdStr.WriteString(scanner.Text() + "\n")
 	}
-	body := ToHTML(strings.TrimSpace(mdStr))
+	body := ToHTML(strings.TrimSpace(mdStr.String()))
 
 	return &ParsedDoc{head, body}, nil
 }
