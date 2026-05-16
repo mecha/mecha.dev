@@ -31,7 +31,6 @@ a {
     text-decoration: none;
 
     &:not(.bare) {
-
         &,
         &:visited {
             color: var(--link);
@@ -79,7 +78,6 @@ h4 {
     color: var(--accent);
 
     a:not(.bare) {
-
         &,
         &:visited {
             color: var(--accent);
@@ -319,7 +317,7 @@ hr,
     min-height: 100lvh;
     padding-inline: 1.25rem;
 
-    >header {
+    > header {
         display: grid;
         gap: 0.5rem;
         justify-items: start;
@@ -336,7 +334,7 @@ hr,
         }
     }
 
-    >footer {
+    > footer {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
@@ -758,7 +756,6 @@ html[data-darkreader-mode] {
 }
 
 @keyframes throbber {
-
     0%,
     100% {
         content: "⠋";
