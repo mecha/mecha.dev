@@ -4,7 +4,6 @@ import (
 	t "html/template"
 	"io"
 	"io/fs"
-	"log"
 	"log/slog"
 )
 
@@ -17,7 +16,7 @@ const baseTmplFilepath = "base.gotmpl"
 func Write(filename string, w io.Writer, data any) {
 	err := getTemplate(filename).Execute(w, data)
 	if err != nil {
-		log.Fatal("error writing view: " + err.Error())
+		slog.Error("error writing view", slog.String("cause", err.Error()))
 	}
 }
 
