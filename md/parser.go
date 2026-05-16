@@ -70,7 +70,8 @@ func ToHTML(md string) template.HTML {
 		mdParser.CommonExtensions | mdParser.AutoHeadingIDs | mdParser.NoEmptyLineBeforeBlock,
 	)
 	renderer := mdHtml.NewRenderer(mdHtml.RendererOptions{
-		Flags: mdHtml.CommonFlags | mdHtml.HrefTargetBlank,
+		Flags:          mdHtml.CommonFlags | mdHtml.HrefTargetBlank,
+		RenderNodeHook: renderNodeHook,
 	})
 	ast := parser.Parse([]byte(md))
 
@@ -78,6 +79,20 @@ func ToHTML(md string) template.HTML {
 
 	htmlStr := string(markdown.Render(ast, renderer))
 	return template.HTML(strings.TrimSpace(htmlStr))
+}
+
+// hook into node rendering to add syntax highlighting
+func renderNodeHook(w io.Writer, node mdAst.Node, entering bool) (mdAst.WalkStatus, bool) {
+	codeBlock, isCodeBlock := node.(*mdAst.CodeBlock)
+	if !isCodeBlock {
+		return mdAst.GoToNext, false
+	}
+
+	if entering {
+		io.WriteString(w, highlightCodeBlock(codeBlock))
+	}
+
+	return mdAst.GoToNext, true
 }
 
 // Adds an anchor link inside each level 2+ heading that links to itself

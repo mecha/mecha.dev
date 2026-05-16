@@ -140,9 +140,10 @@ pre {
     margin: 0;
 
     code {
-        display: inline-block;
+        display: block;
         padding: 0;
         margin: 0;
+        background: transparent;
     }
 }
 
@@ -644,6 +645,21 @@ html[data-darkreader-mode] {
     --selection-inv: var(--accent-inv);
     --line: var(--accent);
     --logo: var(--line);
+
+    --syntax-text: var(--fg);
+    --syntax-comment: var(--subtle);
+    --syntax-keyword: var(--accent);
+    --syntax-type: var(--accent);
+    --syntax-variable: var(--widget);
+    --syntax-symbol: var(--logo);
+    --syntax-func: var(--syntax-symbol);
+    --syntax-string: var(--link);
+    --syntax-number: var(--widget);
+    --syntax-operator: var(--fg);
+    --syntax-punctuation: var(--subtle);
+    --syntax-error-fg: var(--bg);
+    --syntax-error-bg: var(--selection);
+    --syntax-line-number: var(--subtle);
 }
 
 [theme="viridescent"] {
@@ -657,6 +673,15 @@ html[data-darkreader-mode] {
     --link: #95d5b2;
     --logo: #a0d595;
     --selection: var(--link);
+
+    --syntax-type: #e3ca65;
+    --syntax-func: #409cdc;
+    --syntax-punctuation: #818781;
+    --syntax-keyword: #a09af8;
+    --syntax-operator: var(--syntax-keyword);
+    --syntax-string: #81af58;
+    --syntax-number: #f99a47;
+    --syntax-line-number: #515b4c;
 }
 
 [theme="tokyonight"] {
@@ -666,6 +691,15 @@ html[data-darkreader-mode] {
     --subtle: #636da6;
     --accent: #82aaff;
     --link: #c3e88d;
+    --selection: #3d59a1;
+    --selection-inv: var(--fg);
+
+    --syntax-type: #589ed7;
+    --syntax-func: #82aaff;
+    --syntax-punctuation: #a9b1d6;
+    --syntax-keyword: #9d7cd8;
+    --syntax-number: #ff9e64;
+    --syntax-line-number: #3b4261;
 }
 
 [theme="rose pine"] {
@@ -678,6 +712,11 @@ html[data-darkreader-mode] {
     --logo: #31748f;
     --widget: #ebbcba;
     --selection: var(--widget);
+
+    --syntax-type: #9ccfd8;
+    --syntax-func: #ebbcba;
+    --syntax-number: var(--syntax-string);
+    --syntax-keyword: #31748f;
 }
 
 [theme="catppuccin"] {
@@ -691,17 +730,34 @@ html[data-darkreader-mode] {
     --line: var(--accent);
     --logo: #a6e3a1;
     --selection: var(--accent);
+
+    --syntax-type: #cba6f7;
+    --syntax-keyword: var(--syntax-type);
+    --syntax-symbol: #89b4fa;
+    --syntax-comment: #a6adc8;
+    --syntax-operator: #74c7ec;
+    --syntax-punctuation: #a6adc8;
+    --syntax-number: #fab387;
 }
 
 [theme="nord"] {
-    --bg: #2e3440;
+    --bg: #3b4252;
     --fg: #eceff4;
-    --box: #3b4252;
+    --box: #2e3440;
     --subtle: #d8dee9;
     --accent: #88c0d0;
     --link: #8fbcbb;
     --widget: #81a1c1;
     --selection: var(--widget);
+
+    --syntax-string: #a3be8c;
+    --syntax-func: #88c0d0;
+    --syntax-type: #81a1c1;
+    --syntax-number: #b48ead;
+    --syntax-comment: #616e88;
+    --syntax-operator: #88c0d0;
+    --syntax-punctuation: #d8dee9;
+    --syntax-line-number: var(--syntax-comment);
 }
 
 [theme="gruvbox"] {
@@ -713,6 +769,11 @@ html[data-darkreader-mode] {
     --link: #8ec07c;
     --widget: #b8bb26;
     --logo: #fb4934;
+
+    --syntax-keyword: var(--logo);
+    --syntax-func: var(--link);
+    --syntax-string: #b8bb26;
+    --syntax-number: #d3869b;
 }
 
 [theme="slate"] {
@@ -724,6 +785,14 @@ html[data-darkreader-mode] {
     --line: #a2a9ac;
     --selection: #dfecfa;
     --logo: #fff;
+
+    --syntax-type: #cba6f7;
+    --syntax-keyword: var(--syntax-type);
+    --syntax-symbol: #89b4fa;
+    --syntax-comment: #a6adc8;
+    --syntax-operator: #74c7ec;
+    --syntax-punctuation: #a6adc8;
+    --syntax-number: #fab387;
 }
 
 [theme="retina slayer"] {
@@ -735,6 +804,16 @@ html[data-darkreader-mode] {
     --link: #151fac;
     --widget: #000;
     --selection: #000;
+
+    --syntax-type: #7149a0;
+    --syntax-keyword: #ae4641;
+    --syntax-symbol: #89b4fa;
+    --syntax-func: #092989;
+    --syntax-comment: #7e818e;
+    --syntax-operator: #b85555;
+    --syntax-punctuation: var(--syntax-comment);
+    --syntax-string: #1953da;
+    --syntax-number: #d46809;
 }
 
 [theme="lsd"] {
@@ -744,6 +823,121 @@ html[data-darkreader-mode] {
     --subtle: #0ff;
     --accent: #f0f;
     animation: lsd 3s infinite linear;
+}
+
+/*============================================================================*/
+/* SYNTAX HIGHLIGHTING */
+
+.tok-chroma {
+    color: var(--syntax-text);
+
+    .tok-c,
+    .tok-ch,
+    .tok-cm,
+    .tok-c1,
+    .tok-cs,
+    .tok-cp,
+    .tok-cpf {
+        color: var(--syntax-comment);
+        font-style: italic;
+    }
+
+    .tok-k,
+    .tok-kc,
+    .tok-kd,
+    .tok-kn,
+    .tok-kp,
+    .tok-kr {
+        font-weight: bold;
+        color: var(--syntax-keyword);
+    }
+
+    .tok-nb,
+    .tok-kt {
+        color: var(--syntax-type);
+    }
+
+    .tok-bp,
+    .tok-nv,
+    .tok-vc,
+    .tok-vg,
+    .tok-vi,
+    .tok-vm,
+    .tok-no {
+        color: var(--syntax-variable);
+    }
+
+    .tok-nc,
+    .tok-ne,
+    .tok-nf,
+    .tok-fm,
+    .tok-nn,
+    .tok-nt,
+    .tok-na,
+    .tok-nd {
+        color: var(--syntax-symbol);
+    }
+
+    .tok-nf {
+        color: var(--syntax-func);
+    }
+
+    .tok-s,
+    .tok-sa,
+    .tok-sb,
+    .tok-sc,
+    .tok-dl,
+    .tok-sd,
+    .tok-s2,
+    .tok-se,
+    .tok-sh,
+    .tok-si,
+    .tok-sx,
+    .tok-sr,
+    .tok-s1,
+    .tok-ss,
+    .tok-ld {
+        color: var(--syntax-string);
+    }
+
+    .tok-m,
+    .tok-mb,
+    .tok-mf,
+    .tok-mh,
+    .tok-mi,
+    .tok-il,
+    .tok-mo {
+        color: var(--syntax-number);
+    }
+
+    .tok-o,
+    .tok-ow {
+        color: var(--syntax-operator);
+    }
+
+    .tok-p {
+        color: var(--syntax-punctuation);
+    }
+
+    .tok-err {
+        color: var(--syntax-error-fg);
+        background: var(--syntax-error-bg);
+    }
+
+    .tok-ln {
+        --link: var(--syntax-line-number);
+        user-select: none;
+
+        a {
+            padding-inline: 0.5ch;
+            margin-right: 0.5ch;
+
+            &::after,
+            &::before {
+                content: unset;
+            }
+        }
+    }
 }
 
 /*============================================================================*/

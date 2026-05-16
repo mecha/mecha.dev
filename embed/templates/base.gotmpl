@@ -14,13 +14,6 @@
     <link rel="alternate" type="application/atom+xml" title="Atom feed" href="https://mecha.dev/blog/feed?format=atom" />
     <link rel="alternate" type="application/json" title="JSON feed" href="https://mecha.dev/blog/feed?format=json" />
     <script src="/assets/htmx.min.js" defer></script>
-    <script src="/assets/highlight.min.js" defer id="hljs"></script>
-    <script type="text/javascript" defer>
-        document.getElementById("hljs")?.addEventListener("load", function() {
-            hljs.highlightAll();
-            document.addEventListener("htmx:afterSwap", hljs.highlightAll);
-        });
-    </script>
     {{template "theme-selector-js"}}
     {{block "head" .}}{{end}}
 </head>
