@@ -21,7 +21,6 @@ var chromaFmtrWithLineNums = chromaHtml.New(
 	chromaHtml.ClassPrefix("tok-"),
 	chromaHtml.WithClasses(true),
 	chromaHtml.WithLineNumbers(true),
-	chromaHtml.WithLinkableLineNumbers(true, "L"),
 )
 
 func highlightCodeBlock(codeBlock *ast.CodeBlock) string {

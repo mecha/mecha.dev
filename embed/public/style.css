@@ -925,18 +925,9 @@ html[data-darkreader-mode] {
     }
 
     .tok-ln {
-        --link: var(--syntax-line-number);
+        color: var(--syntax-line-number);
+        padding-inline: 0.5ch 1ch;
         user-select: none;
-
-        a {
-            padding-inline: 0.5ch;
-            margin-right: 0.5ch;
-
-            &::after,
-            &::before {
-                content: unset;
-            }
-        }
     }
 }
 
