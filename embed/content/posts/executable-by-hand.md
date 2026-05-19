@@ -532,6 +532,30 @@ If you've been following along:
 
 True, it's the world's most pointless compiler, and if we're being pedantic it's technically just a code generator, since we're not translating a source language. But hey, now you have something you can build upon. Here's an exercise for you: swap out the hard-coded hello world string with a string that you read from a text file. That's sort of a language, right?
 
+By the way, if you want to admire your handiwork, run `hexdump -C my_elf`.
+
+```
+$ hexdump -C my_elf
+00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
+00000010  02 00 3e 00 01 00 00 00  bf 10 40 00 00 00 00 00  |..>.......@.....|
+00000020  40 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |@...............|
+00000030  00 00 00 00 40 00 38 00  02 00 40 00 00 00 00 00  |....@.8...@.....|
+00000040  01 00 00 00 04 00 00 00  b0 00 00 00 00 00 00 00  |................|
+00000050  b0 10 40 00 00 00 00 00  b0 10 40 00 00 00 00 00  |..@.......@.....|
+00000060  0f 00 00 00 00 00 00 00  0f 00 00 00 00 00 00 00  |................|
+00000070  00 10 00 00 00 00 00 00  01 00 00 00 05 00 00 00  |................|
+00000080  bf 00 00 00 00 00 00 00  bf 10 40 00 00 00 00 00  |..........@.....|
+00000090  bf 10 40 00 00 00 00 00  27 00 00 00 00 00 00 00  |..@.....'.......|
+000000a0  27 00 00 00 00 00 00 00  00 10 00 00 00 00 00 00  |'...............|
+000000b0  48 65 6c 6c 6f 2c 20 77  6f 72 6c 64 21 0a 00 b8  |Hello, world!...|
+000000c0  01 00 00 00 bf 01 00 00  00 48 be b0 10 40 00 00  |.........H...@..|
+000000d0  00 00 00 ba 0f 00 00 00  0f 05 b8 3c 00 00 00 bf  |...........<....|
+000000e0  45 00 00 00 0f 05                                 |E.....|
+000000e6
+```
+
+That, is a 230-byte hand-rolled Linux x86_64 executable. Everything the kernel needs to spawn a process. And it's beautiful.
+
 ## Gotta Go
 
 When I had finished the first working version of this program, it took me a few hours of playing around with it to realize that, in my pursuit of learning more about compilers, I ended up building one.
