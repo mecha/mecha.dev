@@ -924,6 +924,10 @@ html[data-darkreader-mode] {
         background: var(--syntax-error-bg);
     }
 
+    .tok-line {
+        padding-right: 1ch;
+    }
+
     .tok-ln {
         color: var(--syntax-line-number);
         padding-inline: 0.5ch 1ch;
